@@ -678,7 +678,7 @@ function shareToSNS(platform) {
                 content: {
                     title: 'AI 얼굴상 분석기',
                     description: shareText,
-                    imageUrl: 'https://projectresolutionsoffice.github.io/web.ai-face/icon/Icon.png',
+                    imageUrl: 'https://pro-ai-face.netlify.app/Icon/Icon.png',
                     link: {
                         mobileWebUrl: shareUrl,
                         webUrl: shareUrl
