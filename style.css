@@ -1,0 +1,106 @@
+body {
+  font-family: 'Noto Sans KR', 'Inter', sans-serif;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.neon-text {
+  text-shadow: 0 0 7px rgba(79, 70, 229, 0.8), 0 0 20px rgba(79, 70, 229, 0.6);
+}
+.screen {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out, visibility 0.5s;
+  min-height: 100vh;
+  width: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+  display: flex; /* <-- 이 줄을 추가하세요 */
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.active-screen {
+  visibility: visible;
+  opacity: 1;
+}
+#result-image-container img, #player1-result-image img, #player2-result-image img {
+  transform: scaleX(-1);
+}
+.loader {
+  border: 5px solid #4a5568;
+  border-top: 5px solid #6366f1;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1.5s linear infinite;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.ad-placeholder {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.875rem;
+}
+/* 슬라이드 버튼 스타일 */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 144px;
+  height: 40px;
+}
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #374151;
+  /* gray-700 */
+  transition: .4s;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+.slider:before {
+  content: "";
+  position: absolute;
+  height: 32px;
+  width: 68px;
+  left: 4px;
+  bottom: 4px;
+  background-color: #6366f1;
+  /* indigo-500 */
+  transition: .4s;
+  border-radius: 9999px;
+}
+input:checked + .slider:before {
+  transform: translateX(68px);
+}
+.slider span {
+  color: #9ca3af;
+  font-weight: 600;
+  z-index: 1;
+  transition: color .4s;
+}
+input:not(:checked) + .slider .male-label {
+  color: #fff;
+}
+input:checked + .slider .female-label {
+  color: #fff;
+}
