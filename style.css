@@ -12,15 +12,69 @@ body {
   visibility: hidden;
   opacity: 0;
   transition: opacity 0.5s ease-in-out, visibility 0.5s;
-  min-height: 100vh;
   width: 100%;
   padding: 1rem;
   box-sizing: border-box;
-  display: flex; /* <-- 이 줄을 추가하세요 */
+  display: flex;
   justify-content: center;
-  align-items: center;
   flex-direction: column;
 }
+
+/* 메인 화면 - 초기화면처럼 설정 */
+#initial-screen {
+  min-height: 100vh;
+  align-items: center;
+}
+
+/* 결과 화면들 */
+#result-screen, #couple-result-screen {
+  min-height: 100vh;
+  padding: 0.5rem;
+  align-items: center;
+  overflow-y: auto;
+}
+
+/* 테스트 화면들 - 중앙정렬, 콘텐츠에 맞는 높이 */
+#test-mode-screen, #loading-camera-screen, #retry-screen,
+#couple-test-screen, #couple-webcam-screen {
+  min-height: 100vh;
+  /*padding: 0.5rem;*/
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+}
+
+/* 광고 영역 최적화 */
+.adfit-ad, .adsense-ad {
+  min-height: 100px;
+  max-height: 120px;
+}
+
+/* 테스트 화면 내부 요소 중앙정렬 */
+/*
+#test-mode-screen > div,
+#loading-camera-screen > div,
+#retry-screen > div,
+#couple-webcam-screen > div {
+  width: 24rem;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+*/
+
+/* 궁합 테스트 화면 내부 요소 중앙정렬 */
+/*
+#couple-test-screen > div {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+*/
 .active-screen {
   visibility: visible;
   opacity: 1;

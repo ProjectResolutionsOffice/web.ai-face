@@ -17,60 +17,113 @@ const coupleTestState = {
 };
 let currentWebcamPlayer = null; // 'player1' 또는 'player2'
 
-const screens = {
-    initial: document.getElementById('initial-screen'),
-    testMode: document.getElementById('test-mode-screen'),
-    loadingCamera: document.getElementById('loading-camera-screen'),
-    coupleTest: document.getElementById('couple-test-screen'),
-    coupleWebcam: document.getElementById('couple-webcam-screen'),
-    result: document.getElementById('result-screen'),
-    coupleResult: document.getElementById('couple-result-screen'),
-    retry: document.getElementById('retry-screen')
-};
-const loadingUi = document.getElementById('loading-ui');
-const loadingText = document.getElementById('loading-text');
-const webcamContainer = document.getElementById('webcam-container');
-const resultImageContainer = document.getElementById('result-image-container');
-const resultContainer = document.getElementById('result-container');
-const resultDescriptionContainer = document.getElementById('result-description-container');
-const resultTitle = document.getElementById('result-title');
-const genderToggle = document.getElementById('gender-toggle');
-const fileUploadInput = document.getElementById('file-upload');
-const captureButton = document.getElementById('capture-button');
-const retryTitle = document.getElementById('retry-title');
-const retryMessage = document.getElementById('retry-message');
-const testModeMain = document.getElementById('test-mode-main');
+// 현재 페이지 확인
+const currentPage = window.location.pathname.split('/').pop() || 'index.html';
 
-// 궁합 테스트 관련 요소
-const player1GenderToggle = document.getElementById('player1-gender-toggle');
-const player2GenderToggle = document.getElementById('player2-gender-toggle');
-const startCoupleTestBtn = document.getElementById('start-couple-test-btn');
-const player1ImageContainer = document.getElementById('player1-image-container');
-const player2ImageContainer = document.getElementById('player2-image-container');
-const player1FileInput = document.getElementById('player1-file-input');
-const player2FileInput = document.getElementById('player2-file-input');
-const player1ResultImage = document.getElementById('player1-result-image');
-const player2ResultImage = document.getElementById('player2-result-image');
-const player1ResultInfo = document.getElementById('player1-result-info');
-const player2ResultInfo = document.getElementById('player2-result-info');
-const coupleMatchText = document.getElementById('couple-match-text');
-const couplePastLifeText = document.getElementById('couple-past-life-text');
-const coupleWebcamContainer = document.getElementById('couple-webcam-container');
-const coupleWebcamTitle = document.getElementById('couple-webcam-title');
+// 페이지별 요소 초기화
+let screens, loadingUi, loadingText, webcamContainer, resultImageContainer, resultContainer, resultDescriptionContainer, resultTitle;
+let genderToggle, fileUploadInput, captureButton, retryTitle, retryMessage, testModeMain;
+let player1GenderToggle, player2GenderToggle, startCoupleTestBtn, player1ImageContainer, player2ImageContainer;
+let player1FileInput, player2FileInput, player1ResultImage, player2ResultImage, player1ResultInfo, player2ResultInfo;
+let coupleMatchText, couplePastLifeText, coupleWebcamContainer, coupleWebcamTitle;
 
-genderToggle.addEventListener('change', (event) => {
-    currentGender = event.target.checked ? 'female' : 'male';
-});
-
-player1GenderToggle.addEventListener('change', (event) => {
-    coupleTestState.player1.gender = event.target.checked ? 'female' : 'male';
-});
-
-player2GenderToggle.addEventListener('change', (event) => {
-    coupleTestState.player2.gender = event.target.checked ? 'female' : 'male';
-});
+// 페이지별 초기화 함수
+function initializePage() {
+    if (currentPage === 'index.html') {
+        // 메인 페이지 초기화
+        genderToggle = document.getElementById('gender-toggle');
+        if (genderToggle) {
+            genderToggle.addEventListener('change', (event) => {
+                currentGender = event.target.checked ? 'female' : 'male';
+            });
+        }
+    } else if (currentPage === 'single-test.html') {
+        // 싱글 테스트 페이지 초기화
+        screens = {
+            testMode: document.getElementById('test-mode-screen'),
+            loadingCamera: document.getElementById('loading-camera-screen'),
+            result: document.getElementById('result-screen'),
+            retry: document.getElementById('retry-screen')
+        };
+        loadingUi = document.getElementById('loading-ui');
+        loadingText = document.getElementById('loading-text');
+        webcamContainer = document.getElementById('webcam-container');
+        resultImageContainer = document.getElementById('result-image-container');
+        resultContainer = document.getElementById('result-container');
+        resultDescriptionContainer = document.getElementById('result-description-container');
+        resultTitle = document.getElementById('result-title');
+        fileUploadInput = document.getElementById('file-upload');
+        captureButton = document.getElementById('capture-button');
+        retryTitle = document.getElementById('retry-title');
+        retryMessage = document.getElementById('retry-message');
+        testModeMain = document.getElementById('test-mode-main');
+        genderToggle = document.getElementById('gender-toggle');
+        
+        // 성별 토글 이벤트 리스너 설정
+        if (genderToggle) {
+            genderToggle.addEventListener('change', (event) => {
+                currentGender = event.target.checked ? 'female' : 'male';
+            });
+        }
+        
+        // 파일 업로드 이벤트 리스너 설정
+        setupFileUploadListener();
+        
+        // 싱글 모드 설정
+        currentMode = 'single';
+        
+        // 기본적으로 테스트 모드 화면 표시
+        showScreen('testMode');
+    } else if (currentPage === 'couple-test.html') {
+        // 궁합 테스트 페이지 초기화
+        screens = {
+            coupleTest: document.getElementById('couple-test-screen'),
+            coupleWebcam: document.getElementById('couple-webcam-screen'),
+            coupleResult: document.getElementById('couple-result-screen')
+        };
+        player1GenderToggle = document.getElementById('player1-gender-toggle');
+        player2GenderToggle = document.getElementById('player2-gender-toggle');
+        startCoupleTestBtn = document.getElementById('start-couple-test-btn');
+        player1ImageContainer = document.getElementById('player1-image-container');
+        player2ImageContainer = document.getElementById('player2-image-container');
+        player1FileInput = document.getElementById('player1-file-input');
+        player2FileInput = document.getElementById('player2-file-input');
+        player1ResultImage = document.getElementById('player1-result-image');
+        player2ResultImage = document.getElementById('player2-result-image');
+        player1ResultInfo = document.getElementById('player1-result-info');
+        player2ResultInfo = document.getElementById('player2-result-info');
+        coupleMatchText = document.getElementById('couple-match-text');
+        couplePastLifeText = document.getElementById('couple-past-life-text');
+        coupleWebcamContainer = document.getElementById('couple-webcam-container');
+        coupleWebcamTitle = document.getElementById('couple-webcam-title');
+        
+        // 이벤트 리스너 설정
+        if (player1GenderToggle) {
+            player1GenderToggle.addEventListener('change', (event) => {
+                coupleTestState.player1.gender = event.target.checked ? 'female' : 'male';
+            });
+        }
+        
+        if (player2GenderToggle) {
+            player2GenderToggle.addEventListener('change', (event) => {
+                coupleTestState.player2.gender = event.target.checked ? 'female' : 'male';
+            });
+        }
+        
+        // 파일 업로드 이벤트 리스너 설정 (플레이어별)
+        setupCoupleFileUploadListeners();
+        
+        // 궁합 모드 설정
+        currentMode = 'couple';
+        
+        // 기본적으로 궁합 테스트 화면 표시
+        showScreen('coupleTest');
+    }
+}
 
 function updateCoupleTestButton() {
+    if (!startCoupleTestBtn) return;
+    
     if (coupleTestState.player1.image && coupleTestState.player2.image) {
         startCoupleTestBtn.disabled = false;
         startCoupleTestBtn.classList.remove('bg-gray-600', 'hover:bg-gray-500');
@@ -83,23 +136,28 @@ function updateCoupleTestButton() {
 }
 
 function showScreen(screenName) {
+    if (!screens) return;
+    
     Object.values(screens).forEach(screen => {
-        screen.classList.remove('active-screen');
-        screen.style.display = 'none'; // DOM에서 완전히 숨김
+        if (screen) {
+            screen.classList.remove('active-screen');
+            screen.style.display = 'none'; // DOM에서 완전히 숨김
+        }
     });
     const activeScreen = screens[screenName];
     activeScreen.style.display = 'flex'; // Flexbox로 표시
-    setTimeout(() => {
+
+    if (activeScreen) {
         activeScreen.classList.add('active-screen');
-    }, 10); // 부드러운 전환을 위한 작은 지연
+    }
 }
 
 async function startTest(mode) {
     currentMode = mode;
     if (currentMode === 'single') {
-        showScreen('testMode');
+        window.location.href = 'single-test.html';
     } else if (currentMode === 'couple') {
-        showScreen('coupleTest');
+        window.location.href = 'couple-test.html';
     }
 }
 
@@ -120,21 +178,26 @@ async function loadModelIfNeeded(gender) {
 async function runAnalysis(testMode) {
     currentTestMode = testMode;
     
-    testModeMain.classList.add('hidden');
-    loadingUi.classList.remove('hidden');
-    loadingText.textContent = 'AI 모델을 불러오는 중입니다...';
+    // 성별이 설정되지 않았다면 기본값 사용
+    if (!currentGender) {
+        currentGender = 'male';
+    }
+    
+    if (testModeMain) testModeMain.classList.add('hidden');
+    if (loadingUi) loadingUi.classList.remove('hidden');
+    if (loadingText) loadingText.textContent = 'AI 모델을 불러오는 중입니다...';
 
     try {
         await loadModelIfNeeded(currentGender);
         
-        loadingUi.classList.add('hidden');
-        testModeMain.classList.remove('hidden');
+        if (loadingUi) loadingUi.classList.add('hidden');
+        if (testModeMain) testModeMain.classList.remove('hidden');
 
         if (currentTestMode === 'webcam') {
             showScreen('loadingCamera');
             await initWebcam(webcamContainer);
         } else { // file mode
-            fileUploadInput.click();
+            if (fileUploadInput) fileUploadInput.click();
         }
     } catch (error) {
         console.error("테스트 초기화 오류:", error);
@@ -348,22 +411,22 @@ async function startCoupleAnalysis(player, method) {
     
     const gender = coupleTestState[player].gender;
     
-    testModeMain.classList.add('hidden');
-    loadingUi.classList.remove('hidden');
-    loadingText.textContent = `AI 모델을 불러오는 중입니다...`;
+    if (loadingUi) loadingUi.classList.remove('hidden');
+    if (loadingText) loadingText.textContent = `AI 모델을 불러오는 중입니다...`;
     
     try {
         await loadModelIfNeeded(gender);
-        loadingUi.classList.add('hidden');
-        testModeMain.classList.remove('hidden');
+        if (loadingUi) loadingUi.classList.add('hidden');
 
         if (method === 'webcam') {
-            coupleWebcamTitle.textContent = (player === 'player1') ? '플레이어 1 사진 촬영' : '플레이어 2 사진 촬영';
+            if (coupleWebcamTitle) {
+                coupleWebcamTitle.textContent = (player === 'player1') ? '플레이어 1 사진 촬영' : '플레이어 2 사진 촬영';
+            }
             showScreen('coupleWebcam');
             await initWebcam(coupleWebcamContainer);
         } else if (method === 'file') {
             const fileInput = (player === 'player1') ? player1FileInput : player2FileInput;
-            fileInput.click();
+            if (fileInput) fileInput.click();
         }
 
     } catch (error) {
@@ -373,12 +436,17 @@ async function startCoupleAnalysis(player, method) {
     }
 }
 
-player1FileInput.addEventListener('change', (event) => handleCoupleFileInput(event, 'player1'));
-player2FileInput.addEventListener('change', (event) => handleCoupleFileInput(event, 'player2'));
+
 
 function handleCoupleFileInput(event, player) {
     const file = event.target.files[0];
     if (!file) return;
+    
+    if (!file.type.startsWith('image/')) {
+        alert('이미지 파일만 업로드할 수 있습니다.');
+        event.target.value = '';
+        return;
+    }
 
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -386,12 +454,14 @@ function handleCoupleFileInput(event, player) {
         img.src = e.target.result;
         img.classList.add('w-full', 'h-full', 'object-cover');
         img.style.transform = 'scaleX(-1)';
-        img.alt = `${player === 'player1' ? '플레이어 1' : '플레이어 2'}가 업로드한 사진`; // 이 줄을 추가합니다.
+        img.alt = `${player === 'player1' ? '플레이어 1' : '플레이어 2'}가 업로드한 사진`;
 
         const container = (player === 'player1') ? player1ImageContainer : player2ImageContainer;
-        container.innerHTML = '';
-        container.classList.remove('flex');
-        container.appendChild(img);
+        if (container) {
+            container.innerHTML = '';
+            container.classList.remove('flex');
+            container.appendChild(img);
+        }
 
         coupleTestState[player].image = img;
         updateCoupleTestButton();
@@ -400,8 +470,8 @@ function handleCoupleFileInput(event, player) {
 }
 
 function captureCouplePhoto() {
-        if (!webcam) return;
-    
+    if (!webcam) return;
+
     const capturedCanvas = document.createElement('canvas');
     const context = capturedCanvas.getContext('2d');
     capturedCanvas.width = webcam.canvas.width;
@@ -415,11 +485,13 @@ function captureCouplePhoto() {
     img.src = capturedCanvas.toDataURL('image/jpeg');
     img.classList.add('w-full', 'h-full', 'object-cover');
     img.style.transform = 'scaleX(-1)';
-    img.alt = `${currentWebcamPlayer === 'player1' ? '플레이어 1' : '플레이어 2'}가 카메라로 촬영한 사진`; // 이 줄을 추가합니다.
+    img.alt = `${currentWebcamPlayer === 'player1' ? '플레이어 1' : '플레이어 2'}가 카메라로 촬영한 사진`;
     
     const container = (currentWebcamPlayer === 'player1') ? player1ImageContainer : player2ImageContainer;
-    container.innerHTML = '';
-    container.appendChild(img);
+    if (container) {
+        container.innerHTML = '';
+        container.appendChild(img);
+    }
 
     coupleTestState[currentWebcamPlayer].image = capturedCanvas;
     updateCoupleTestButton();
@@ -427,14 +499,16 @@ function captureCouplePhoto() {
 }
 
 function backToCoupleTestScreen() {
-        if (webcam && webcam.running) {
+    if (webcam && webcam.running) {
         webcam.stop();
     }
     if (rafId) {
         window.cancelAnimationFrame(rafId);
         rafId = null;
     }
-    coupleWebcamContainer.innerHTML = '';
+    if (coupleWebcamContainer) {
+        coupleWebcamContainer.innerHTML = '';
+    }
     showScreen('coupleTest');
 }
 
@@ -444,8 +518,8 @@ async function startCoupleTest() {
         return;
     }
     
-    loadingUi.classList.remove('hidden');
-    loadingText.textContent = '궁합을 분석하고 있습니다...';
+    if (loadingUi) loadingUi.classList.remove('hidden');
+    if (loadingText) loadingText.textContent = '궁합을 분석하고 있습니다...';
 
     try {
         const p1Gender = coupleTestState.player1.gender;
@@ -581,12 +655,13 @@ function showCoupleResultScreen() {
             <div class="bg-indigo-500 h-2.5 rounded-full" style="width: ${(p2Result.probability * 100).toFixed(1)}%"></div>
         </div>
     `;
-
+    alert(1)
     const resultTexts = getCoupleResultText(p1Result, p2Result);
     coupleMatchText.innerHTML = resultTexts.compatibility;
     couplePastLifeText.innerHTML = resultTexts.pastLife;
-    
-    loadingUi.classList.add('hidden');
+    alert(2)
+    if (loadingUi) loadingUi.classList.add('hidden');
+    alert(3)
 }
 
 function resetTest() {
@@ -597,64 +672,88 @@ function resetTest() {
         window.cancelAnimationFrame(rafId);
         rafId = null;
     }
-    webcamContainer.innerHTML = '';
-    resultImageContainer.innerHTML = '';
-    resultContainer.innerHTML = '';
-    resultDescriptionContainer.innerHTML = '';
-    currentResult = { type: '', prob: 0 };
-    fileUploadInput.value = '';
-
-    coupleTestState.player1.image = null;
-    coupleTestState.player1.result = null;
-    coupleTestState.player2.image = null;
-    coupleTestState.player2.result = null;
-    player1ImageContainer.innerHTML = '<i class="fa-solid fa-camera text-4xl"></i>';
-    player1ImageContainer.classList.add('flex');
-    player2ImageContainer.innerHTML = '<i class="fa-solid fa-camera text-4xl"></i>';
-    player2ImageContainer.classList.add('flex');
-    player1FileInput.value = '';
-    player2FileInput.value = '';
-    updateCoupleTestButton();
-
-    testModeMain.classList.remove('hidden'); 
-    loadingUi.classList.add('hidden');
     
-    showScreen('initial');
+    // 현재 페이지에 따라 다른 동작 수행
+    if (currentPage === 'single-test.html' || currentPage === 'couple-test.html') {
+        window.location.href = 'index.html';
+    } else {
+        // 기존 로직 (필요한 경우)
+        if (webcamContainer) webcamContainer.innerHTML = '';
+        if (resultImageContainer) resultImageContainer.innerHTML = '';
+        if (resultContainer) resultContainer.innerHTML = '';
+        if (resultDescriptionContainer) resultDescriptionContainer.innerHTML = '';
+        currentResult = { type: '', prob: 0 };
+        if (fileUploadInput) fileUploadInput.value = '';
+
+        coupleTestState.player1.image = null;
+        coupleTestState.player1.result = null;
+        coupleTestState.player2.image = null;
+        coupleTestState.player2.result = null;
+        if (player1ImageContainer) {
+            player1ImageContainer.innerHTML = '<i class="fa-solid fa-camera text-4xl"></i>';
+            player1ImageContainer.classList.add('flex');
+        }
+        if (player2ImageContainer) {
+            player2ImageContainer.innerHTML = '<i class="fa-solid fa-camera text-4xl"></i>';
+            player2ImageContainer.classList.add('flex');
+        }
+        if (player1FileInput) player1FileInput.value = '';
+        if (player2FileInput) player2FileInput.value = '';
+        updateCoupleTestButton();
+
+        if (testModeMain) testModeMain.classList.remove('hidden'); 
+        if (loadingUi) loadingUi.classList.add('hidden');
+    }
 }
 
-fileUploadInput.addEventListener('change', async (event) => {
-    const file = event.target.files[0];
-    if (!file) {
-            return;
-    }
-    if (!file.type.startsWith('image/')) {
-            alert('이미지 파일만 업로드할 수 있습니다.');
-            fileUploadInput.value = '';
-            return;
+// 궁합 테스트용 파일 업로드 이벤트 리스너 함수
+function setupCoupleFileUploadListeners() {
+    if (player1FileInput) {
+        player1FileInput.addEventListener('change', (event) => handleCoupleFileInput(event, 'player1'));
     }
     
-    showScreen('testMode');
-    testModeMain.classList.add('hidden');
-    loadingUi.classList.remove('hidden');
-    loadingText.textContent = '사진을 분석하고 있습니다...';
+    if (player2FileInput) {
+        player2FileInput.addEventListener('change', (event) => handleCoupleFileInput(event, 'player2'));
+    }
+}
 
-    const img = new Image();
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        img.onload = () => {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx.drawImage(img, 0, 0);
+// 파일 업로드 이벤트 리스너 함수
+function setupFileUploadListener() {
+    if (fileUploadInput) {
+        fileUploadInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+            if (!file.type.startsWith('image/')) {
+                alert('이미지 파일만 업로드할 수 있습니다.');
+                fileUploadInput.value = '';
+                return;
+            }
+            
+            if (testModeMain) testModeMain.classList.add('hidden');
+            if (loadingUi) loadingUi.classList.remove('hidden');
+            if (loadingText) loadingText.textContent = '사진을 분석하고 있습니다...';
 
-            showResultScreenAndPredict(canvas);
-            loadingUi.classList.add('hidden');
-        };
-        img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-});
+            const img = new Image();
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+
+                    showResultScreenAndPredict(canvas);
+                    if (loadingUi) loadingUi.classList.add('hidden');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+}
 
 function shareToSNS(platform) {
     const shareUrl = window.location.href;
@@ -713,6 +812,4 @@ function shareToSNS(platform) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    showScreen('initial');
-});
+document.addEventListener('DOMContentLoaded', initializePage);
